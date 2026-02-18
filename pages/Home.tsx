@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Compass, Anchor, ScrollText, Check, Landmark, Calculator, BarChart2 } from 'lucide-react';
+import { ArrowRight, Compass, Anchor, ScrollText, Check, Landmark, Calculator, BarChart2, Mouse } from 'lucide-react';
 import { useCMS } from '../context/CMSContext';
 import { Reveal, WordReveal } from '../components/Reveal';
 
