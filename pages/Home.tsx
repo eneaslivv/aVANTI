@@ -345,14 +345,18 @@ const Home: React.FC = () => {
                             </Reveal>
                         </div>
                         <div className="order-1 lg:order-2 lg:pl-12">
-                            <Reveal delay={0.4}>
+                            <Reveal delay={0.2}>
                                 <h2 className="font-serif text-4xl md:text-5xl text-avanti-900 tracking-tight leading-tight mb-6">
                                     {t('home.horizon.title')} <br /><span className="text-gray-400">{t('home.horizon.titleItalic')}</span>
                                 </h2>
+                            </Reveal>
+                            <Reveal delay={0.4}>
                                 <h3 className="text-lg text-slate-500 font-light mb-10 leading-relaxed">
                                     {t('home.horizon.subtitle')}
                                 </h3>
-                                <div className="space-y-10">
+                            </Reveal>
+                            <div className="space-y-10">
+                                <Reveal delay={0.5}>
                                     <div className="flex gap-5 group">
                                         <div className="mt-1 flex-shrink-0 w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center group-hover:border-avanti-gold transition-colors">
                                             <Compass className="w-5 h-5 text-avanti-900" />
@@ -364,6 +368,8 @@ const Home: React.FC = () => {
                                             </p>
                                         </div>
                                     </div>
+                                </Reveal>
+                                <Reveal delay={0.6}>
                                     <div className="flex gap-5 group">
                                         <div className="mt-1 flex-shrink-0 w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center group-hover:border-avanti-gold transition-colors">
                                             <Anchor className="w-5 h-5 text-avanti-900" />
@@ -375,6 +381,8 @@ const Home: React.FC = () => {
                                             </p>
                                         </div>
                                     </div>
+                                </Reveal>
+                                <Reveal delay={0.7}>
                                     <div className="flex gap-5 group">
                                         <div className="mt-1 flex-shrink-0 w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center group-hover:border-avanti-gold transition-colors">
                                             <ScrollText className="w-5 h-5 text-avanti-900" />
@@ -386,8 +394,8 @@ const Home: React.FC = () => {
                                             </p>
                                         </div>
                                     </div>
-                                </div>
-                            </Reveal>
+                                </Reveal>
+                            </div>
                         </div>
                     </div>
                 </div>
