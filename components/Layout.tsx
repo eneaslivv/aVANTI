@@ -305,10 +305,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             <div className="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-8">
               <Link to="/" className="hover:opacity-80 transition-opacity">
                 <img
-                  src="/assets/logo/logo-gold-dark.png"
+                  src={logoDark}
                   alt="Avanti Advisory Group"
                   className="h-14 w-auto object-contain"
-                  onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/assets/logo/logo-gold-white.png'; }}
+                  onError={(e) => { (e.currentTarget as HTMLImageElement).src = logoLight; }}
                 />
               </Link>
               <span className="text-[10px] text-gray-400">© {new Date().getFullYear()} {t('footer.rights')}</span>
