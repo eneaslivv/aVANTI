@@ -80,38 +80,40 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         style={{ backgroundColor: headerBackgroundColor }}
       >
         <div className={headerContainer}>
-              <div className={`flex justify-between items-center transition-all duration-700 ease-in-out ${isScrolled ? 'h-16 md:h-20' : 'h-24'}`}>
-                {/* Logo */}
-                <Link to="/" className="flex items-center gap-3 md:gap-4 group" onClick={closeMenu}>
-                  {!logoError ? (
-                    <img
-                      src={currentLogoSrc}
-                      alt="Avanti Advisory Group logo"
-                      className="h-10 md:h-12 transition-all duration-500"
-                      onError={(event) => {
-                        const target = event.currentTarget as HTMLImageElement;
-                        if (target.src !== fallbackLogo) {
-                          target.src = fallbackLogo;
-                        } else {
-                          setLogoError(true);
-                        }
-                      }}
-                    />
-                  ) : (
-                    <div className={`flex items-center gap-3 md:gap-4 ${isScrolled ? 'scale-90 md:scale-95' : 'scale-100'}`}>
-                      <div className="relative overflow-hidden rounded-sm shadow-sm group-hover:shadow-md transition-all duration-500">
-                        <svg className="w-10 h-10 md:w-12 md:h-12" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <rect width="48" height="48" fill={isTransparent ? '#BD9F63' : '#1A1A1A'} className="transition-colors duration-700" />
-                          <path d="M24 10L36 38H30L24 22L18 38H12L24 10Z" fill={isTransparent ? 'white' : '#BD9F63'} className="transition-colors duration-700" />
-                        </svg>
-                      </div>
-                      <div className="flex flex-col justify-center">
-                        <span className={`text-xl md:text-2xl font-serif font-bold tracking-tight leading-none transition-all duration-700 ${isTransparent ? 'text-white' : 'text-avanti-900'} ${isScrolled ? 'md:text-xl' : ''}`}>AVANTI</span>
-                        <span className={`text-[8px] md:text-[10px] font-sans uppercase tracking-[0.25em] leading-tight mt-1 font-semibold transition-all duration-700 ${isTransparent ? 'text-avanti-gold-light' : 'text-avanti-gold'} ${isScrolled ? 'opacity-0 h-0 mt-0 pointer-events-none' : 'opacity-100'}`}>Advisory Group</span>
-                      </div>
-                    </div>
-                  )}
-                </Link>
+          <div className={`flex justify-between items-center transition-all duration-700 ease-in-out ${isScrolled ? 'h-16 md:h-20' : 'h-24'}`}>
+            {/* Logo */}
+            <Link to="/" className="flex items-center gap-3 md:gap-4 group" onClick={closeMenu}>
+              {/* Logo Image or Fallback Icon */}
+              {!logoError ? (
+                <img
+                  src={currentLogoSrc}
+                  alt="Avanti Advisory Group logo"
+                  className="h-10 md:h-12 w-auto object-contain bg-transparent transition-all duration-500"
+                  onError={(event) => {
+                    const target = event.currentTarget as HTMLImageElement;
+                    // Prevent infinite loop if fallback also fails
+                    if (target.src !== fallbackLogo && target.src.indexOf('logo-white.png') === -1) {
+                      target.src = fallbackLogo;
+                    } else {
+                      setLogoError(true);
+                    }
+                  }}
+                />
+              ) : (
+                <div className={`relative overflow-hidden rounded-sm shadow-sm transition-all duration-500 ${isScrolled ? 'scale-90 md:scale-95' : 'scale-100'}`}>
+                  <svg className="w-10 h-10 md:w-12 md:h-12" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="48" height="48" fill={isTransparent ? '#BD9F63' : '#1A1A1A'} className="transition-colors duration-700" />
+                    <path d="M24 10L36 38H30L24 22L18 38H12L24 10Z" fill={isTransparent ? 'white' : '#BD9F63'} className="transition-colors duration-700" />
+                  </svg>
+                </div>
+              )}
+
+              {/* Brand Text - Always Visible and Aligned */}
+              <div className="flex flex-col justify-center">
+                <span className={`text-xl md:text-2xl font-serif font-bold tracking-tight leading-none transition-all duration-700 ${isTransparent ? 'text-white' : 'text-avanti-900'} ${isScrolled ? 'md:text-xl' : ''}`}>AVANTI</span>
+                <span className={`text-[8px] md:text-[10px] font-sans uppercase tracking-[0.25em] leading-tight mt-1 font-semibold transition-all duration-700 ${isTransparent ? 'text-avanti-gold-light' : 'text-avanti-gold'} ${isScrolled ? 'opacity-0 h-0 mt-0 pointer-events-none' : 'opacity-100'}`}>Advisory Group</span>
+              </div>
+            </Link>
 
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center space-x-6 lg:space-x-8">
