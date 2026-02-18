@@ -697,9 +697,9 @@ export const CMSProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           .eq('language', language)
           .single();
 
-        if (fetchError) throw fetchError;
+        if (fetchError && fetchError.code !== 'PGRST116') throw fetchError;
 
-        const currentJson = currentRow.content || {};
+        const currentJson = currentRow?.content || {};
         const newJson = {
           ...currentJson,
           [section]: { ...(currentJson[section] || {}), ...data }
