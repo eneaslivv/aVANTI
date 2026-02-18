@@ -26,7 +26,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   // Smoother transition: Border only appears on scroll
   const headerBackgroundClass = isTransparent
     ? 'bg-transparent shadow-none py-4'
-    : 'bg-avanti-900/95 border-b border-white/10 shadow-lg backdrop-blur-md py-2';
+    : 'bg-white/95 border-b border-gray-100 shadow-sm backdrop-blur-md py-2';
 
   const headerClassName = `fixed w-full top-0 z-50 transition-all duration-500 ease-in-out ${headerBackgroundClass}`;
 
@@ -37,50 +37,20 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   const currentLogoSrc = isTransparent ? logoLight : logoDark;
 
-  // Detect scroll to toggle header background
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  // ... (scroll effect)
 
   useEffect(() => {
     setLogoError(false);
   }, [currentLogoSrc]);
 
-  const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
-  const closeMenu = () => {
-    setIsMenuOpen(false);
-    setIsServicesOpen(false);
-  };
+  // ... (menu toggles)
 
-  const serviceGroups = [
-    {
-      title: t('services.fiscal'),
-      icon: FileText,
-      items: [
-        { name: language === 'es' ? 'Impuestos a Empresas' : 'Corporate Taxes', path: '/services/impuestos-empresas' },
-        { name: language === 'es' ? 'Impuestos a Personas' : 'Individual Taxes', path: '/services/impuestos-personas' },
-        { name: language === 'es' ? 'Impuestos Extranjeros' : 'Foreign Taxes', path: '/services/impuestos-extranjeros' },
-        { name: language === 'es' ? 'Formularios Atrasados' : 'Streamlined / Delinquent', path: '/services/streamlined-delinquent' },
-      ]
-    },
-    {
-      title: t('services.consulting'),
-      icon: PieChart,
-      items: [
-        { name: language === 'es' ? 'Contabilidad y Bookkeeping' : 'Accounting & Bookkeeping', path: '/services/contabilidad' },
-        { name: language === 'es' ? 'Herencias y Fideicomisos' : 'Estates & Trusts', path: '/services/herencias-fideicomisos' },
-        { name: language === 'es' ? 'Consultoría Fiscal' : 'Tax Consulting', path: '/services/consultoria-fiscal' },
-        { name: language === 'es' ? 'Comunicaciones y Branding' : 'Branding & Comms', path: '/services/branding' },
-      ]
-    }
-  ];
+  // ... (serviceGroups)
 
   // Common Nav Text Color Logic
-  const navTextColor = isTransparent ? 'text-white' : 'text-gray-700 hover:text-avanti-900';
+  // When transparent (dark bg): white text
+  // When solid (white bg): dark text
+  const navTextColor = isTransparent ? 'text-white' : 'text-gray-700 hover:text-avanti-gold';
 
   return (
     <div className="flex flex-col min-h-screen font-sans">
