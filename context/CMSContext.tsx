@@ -124,6 +124,8 @@ interface CMSContextType {
   // Utilities
   generateSlug: (title: string) => string;
   refreshData: () => Promise<void>;
+  lastSaved: Date | null;
+  isSaving: boolean;
 }
 
 const CMSContext = createContext<CMSContextType | undefined>(undefined);
@@ -317,6 +319,8 @@ export const CMSProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [servicesEn, setServicesEn] = useState<Record<string, ServiceData>>({});
   const [media, setMedia] = useState<MediaItem[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
+  const [lastSaved, setLastSaved] = useState<Date | null>(new Date());
+  const [isSaving, setIsSaving] = useState(false);
 
   // Translation Function
   const t = (key: keyof typeof uiDictionary.es) => {
@@ -647,6 +651,7 @@ export const CMSProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const updatePageContent = async (page: keyof PageContent, section: string, data: any) => {
     try {
+      setIsSaving(true);
       // 1. Optimistic Update (Update local state immediately)
       const updater = (prev: PageContent) => ({
         ...prev,
@@ -713,14 +718,18 @@ export const CMSProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         if (error) throw error;
       }
 
+      setLastSaved(new Date());
     } catch (err) {
       console.error('Error updating page content:', err);
       throw err;
+    } finally {
+      setIsSaving(false);
     }
   };
 
   const updateService = async (id: string, data: ServiceData) => {
     try {
+      setIsSaving(true);
       const { error } = await supabase
         .from('services')
         .update({
@@ -735,9 +744,12 @@ export const CMSProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
       if (error) throw error;
       await fetchServices();
+      setLastSaved(new Date());
     } catch (err) {
       console.error('Error updating service:', err);
       throw err;
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -760,6 +772,7 @@ export const CMSProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const uploadImage = async (file: File): Promise<string> => {
     try {
+      setIsSaving(true);
       const fileExt = file.name.split('.').pop();
       const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
       const filePath = `uploads/${fileName}`;
@@ -776,10 +789,30 @@ export const CMSProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         .from('images')
         .getPublicUrl(filePath);
 
-      return data.publicUrl;
+      const publicUrl = data.publicUrl;
+
+      // Verification: Check if URL is responding
+      try {
+        const response = await fetch(publicUrl, { method: 'HEAD' });
+        if (!response.ok) throw new Error('Could not verify image upload');
+      } catch (e) {
+        console.warn('Image verification failed, but continuing:', e);
+      }
+
+      // Auto-register in Media table
+      await addMedia({
+        id: 0, // Placeholder
+        name: file.name,
+        url: publicUrl,
+        date: new Date().toISOString()
+      });
+
+      return publicUrl;
     } catch (err) {
       console.error('Error uploading image:', err);
       throw err;
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -862,7 +895,7 @@ export const CMSProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       services, updateService,
       media, addMedia, deleteMedia, uploadImage,
       messages, addMessage, markAsRead, deleteMessage,
-      generateSlug, refreshData
+      generateSlug, refreshData, lastSaved, isSaving
     }}>
       {children}
     </CMSContext.Provider>

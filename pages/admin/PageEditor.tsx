@@ -10,7 +10,7 @@ import { Link } from 'react-router-dom';
 import { ServiceData } from '../../types';
 
 const PageEditor: React.FC = () => {
-    const { pageContent, updatePageContent, services, updateService } = useCMS();
+    const { pageContent, updatePageContent, services, updateService, isSaving, lastSaved } = useCMS();
 
     // State for Navigation
     const [selectedType, setSelectedType] = useState<'static' | 'service'>('static');
@@ -82,7 +82,14 @@ const PageEditor: React.FC = () => {
                 >
                     {value ? (
                         <>
-                            <img src={value} alt="Preview" className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-40 transition-opacity" />
+                            {/* Checkerboard background for transparency */}
+                            <div className="absolute inset-0 opacity-20" style={{
+                                backgroundImage: `linear-gradient(45deg, #ccc 25%, transparent 25%), linear-gradient(-45deg, #ccc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ccc 75%), linear-gradient(-45deg, transparent 75%, #ccc 75%)`,
+                                backgroundSize: `20px 20px`,
+                                backgroundPosition: `0 0, 0 10px, 10px -10px, -10px 0px`
+                            }}></div>
+
+                            <img src={value} alt="Preview" className="absolute inset-0 w-full h-full object-contain p-2 z-10" />
                             <div className="z-10 opacity-0 group-hover:opacity-100 flex flex-col items-center transition-opacity">
                                 <Smartphone className="w-6 h-6 text-white mb-1" />
                                 <span className="text-[10px] font-bold uppercase tracking-widest text-white">Cambiar Imagen</span>
@@ -139,6 +146,25 @@ const PageEditor: React.FC = () => {
                             <ChevronDown className="w-5 h-5 rotate-90" />
                         </Link>
                         <span className="font-bold text-white tracking-widest text-sm">EDITOR VISUAL</span>
+                    </div>
+
+                    {/* Save Status Indicator */}
+                    <div className="flex items-center gap-2">
+                        {isSaving ? (
+                            <div className="flex items-center gap-1.5 bg-avanti-gold/10 px-2 py-1 rounded-sm">
+                                <span className="w-1.5 h-1.5 bg-avanti-gold rounded-full animate-pulse shadow-[0_0_8px_#C5A572]"></span>
+                                <span className="text-[9px] font-bold text-avanti-gold uppercase tracking-tighter">Guardando</span>
+                            </div>
+                        ) : (
+                            <div className="flex flex-col items-end">
+                                <span className="text-[9px] font-bold text-green-500 uppercase tracking-tighter">Sincronizado</span>
+                                {lastSaved && (
+                                    <span className="text-[8px] text-gray-500 font-medium tracking-tighter">
+                                        {lastSaved.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                    </span>
+                                )}
+                            </div>
+                        )}
                     </div>
                 </div>
 

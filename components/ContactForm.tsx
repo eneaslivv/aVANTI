@@ -21,32 +21,37 @@ const ContactForm: React.FC<ContactFormProps> = ({ defaultReason = ContactReason
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
-    // Simulate network delay then save to Context
-    setTimeout(() => {
-        addMessage(formData);
-        
-        setSuccess(true);
-        setFormData({
-            name: '',
-            email: '',
-            phone: '',
-            reason: defaultReason,
-            message: ''
-        });
-        setIsSubmitting(false);
+    setError(null);
 
-        // Reset success message after 5 seconds
-        setTimeout(() => setSuccess(false), 5000);
-    }, 1000);
+    try {
+      await addMessage(formData);
+
+      setSuccess(true);
+      setFormData({
+        name: '',
+        email: '',
+        phone: '',
+        reason: defaultReason,
+        message: ''
+      });
+
+      // Reset success message after 5 seconds
+      setTimeout(() => setSuccess(false), 5000);
+    } catch (err: any) {
+      console.error('Lead capture failed:', err);
+      setError(t('contact.formError') || 'Hubo un error al enviar su mensaje. Por favor, intente nuevamente.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   // Premium Input Style
@@ -63,104 +68,110 @@ const ContactForm: React.FC<ContactFormProps> = ({ defaultReason = ContactReason
         <p className="text-sm text-gray-500 mt-3 font-light leading-relaxed">{t('contact.formSubtitle')}</p>
       </div>
 
+      {error && (
+        <div className="bg-red-50 border border-red-200 p-4 rounded-sm text-center mb-6 animate-page-enter">
+          <p className="text-red-700 text-xs font-medium">{error}</p>
+        </div>
+      )}
+
       {success ? (
-          <div className="bg-green-50 border border-green-200 p-8 rounded-sm text-center animate-page-enter">
-              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 text-green-700">
-                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" /></svg>
-              </div>
-              <h4 className="text-green-800 font-serif text-xl mb-2 font-medium">{t('contact.formSuccessTitle')}</h4>
-              <p className="text-green-700 text-sm mb-6">{t('contact.formSuccessMsg')}</p>
-              <button onClick={() => setSuccess(false)} className="text-xs font-bold uppercase tracking-widest text-green-800 border-b border-green-800 pb-0.5 hover:opacity-70 transition-opacity">{t('contact.formAnother')}</button>
+        <div className="bg-green-50 border border-green-200 p-8 rounded-sm text-center animate-page-enter">
+          <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 text-green-700">
+            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" /></svg>
           </div>
+          <h4 className="text-green-800 font-serif text-xl mb-2 font-medium">{t('contact.formSuccessTitle')}</h4>
+          <p className="text-green-700 text-sm mb-6">{t('contact.formSuccessMsg')}</p>
+          <button onClick={() => setSuccess(false)} className="text-xs font-bold uppercase tracking-widest text-green-800 border-b border-green-800 pb-0.5 hover:opacity-70 transition-opacity">{t('contact.formAnother')}</button>
+        </div>
       ) : (
         <form onSubmit={handleSubmit} className="space-y-7">
-            <div>
+          <div>
             <label htmlFor="name" className={labelClass}>{t('contact.formName')}</label>
             <input
-                type="text"
-                id="name"
-                name="name"
-                required
-                value={formData.name}
-                onChange={handleChange}
-                className={inputClass}
-                placeholder="Ej. Juan Pérez"
+              type="text"
+              id="name"
+              name="name"
+              required
+              value={formData.name}
+              onChange={handleChange}
+              className={inputClass}
+              placeholder="Ej. Juan Pérez"
             />
-            </div>
-            
-            <div>
+          </div>
+
+          <div>
             <label htmlFor="email" className={labelClass}>{t('contact.formEmail')}</label>
             <input
-                type="email"
-                id="email"
-                name="email"
-                required
-                value={formData.email}
-                onChange={handleChange}
-                className={inputClass}
-                placeholder="nombre@empresa.com"
+              type="email"
+              id="email"
+              name="email"
+              required
+              value={formData.email}
+              onChange={handleChange}
+              className={inputClass}
+              placeholder="nombre@empresa.com"
             />
-            </div>
+          </div>
 
-            <div>
+          <div>
             <label htmlFor="phone" className={labelClass}>{t('contact.formPhone')}</label>
             <input
-                type="tel"
-                id="phone"
-                name="phone"
-                value={formData.phone}
-                onChange={handleChange}
-                className={inputClass}
-                placeholder="+1 (555) 000-0000"
+              type="tel"
+              id="phone"
+              name="phone"
+              value={formData.phone}
+              onChange={handleChange}
+              className={inputClass}
+              placeholder="+1 (555) 000-0000"
             />
-            </div>
+          </div>
 
-            <div>
+          <div>
             <label htmlFor="reason" className={labelClass}>{t('contact.formReason')}</label>
             <div className="relative">
-                <select
-                    id="reason"
-                    name="reason"
-                    value={formData.reason}
-                    onChange={handleChange}
-                    className={`${inputClass} appearance-none cursor-pointer`}
-                >
-                    {Object.values(ContactReason).map((reason) => (
-                    <option key={reason} value={reason}>{reason}</option>
-                    ))}
-                </select>
-                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
-                    <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
-                </div>
+              <select
+                id="reason"
+                name="reason"
+                value={formData.reason}
+                onChange={handleChange}
+                className={`${inputClass} appearance-none cursor-pointer`}
+              >
+                {Object.values(ContactReason).map((reason) => (
+                  <option key={reason} value={reason}>{reason}</option>
+                ))}
+              </select>
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
+                <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /></svg>
+              </div>
             </div>
-            </div>
+          </div>
 
-            <div>
+          <div>
             <label htmlFor="message" className={labelClass}>{t('contact.formMessage')}</label>
             <textarea
-                id="message"
-                name="message"
-                rows={4}
-                required
-                value={formData.message}
-                onChange={handleChange}
-                className={`${inputClass} resize-none leading-relaxed`}
-                placeholder="..."
+              id="message"
+              name="message"
+              rows={4}
+              required
+              value={formData.message}
+              onChange={handleChange}
+              className={`${inputClass} resize-none leading-relaxed`}
+              placeholder="..."
             ></textarea>
-            </div>
+          </div>
 
-            <button
+          <button
             type="submit"
             disabled={isSubmitting}
             className="w-full bg-avanti-900 text-white font-bold py-4 px-6 rounded-sm hover:bg-avanti-800 transition-all duration-300 uppercase tracking-widest text-xs mt-2 shadow-lg hover:shadow-xl flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed transform hover:-translate-y-0.5"
-            >
+          >
             {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
             {isSubmitting ? t('contact.formSubmitting') : t('contact.formSubmit')}
-            </button>
-            
-            <p className="text-[10px] text-gray-400 mt-6 text-center leading-relaxed">
+          </button>
+
+          <p className="text-[10px] text-gray-400 mt-6 text-center leading-relaxed">
             {t('contact.formDisclaimer')}
-            </p>
+          </p>
         </form>
       )}
     </div>
