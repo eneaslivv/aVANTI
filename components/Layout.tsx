@@ -22,9 +22,14 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const gridContainer = "max-w-[1400px] mx-auto px-6 md:px-16 lg:px-24";
   const headerContainer = gridContainer;
   const branding = pageContent?.home?.branding;
-  const headerBackgroundColor = isTransparent ? (branding?.transparentBackground || 'transparent') : (branding?.solidBackground || 'rgba(255,255,255,0.95)');
-  const headerClassName = `fixed w-full top-0 z-50 transition-all duration-700 ease-in-out ${isTransparent ? 'py-2' : 'backdrop-blur-lg border-b border-white/20 shadow-lg py-0'}`;
-  const fallbackLogo = branding?.logoFallback || '/assets/logo/logo-white.png';
+
+  // Smoother transition: Use opacity/transform for background instead of raw switch
+  const headerBackgroundClass = isTransparent ? 'bg-transparent border-transparent shadow-none py-4' : 'bg-avanti-900/95 border-white/10 shadow-lg backdrop-blur-md py-2';
+
+  const headerClassName = `fixed w-full top-0 z-50 transition-all duration-500 ease-in-out border-b ${headerBackgroundClass}`;
+
+  // Use Avanti Gold as default fallback to match new branding
+  const fallbackLogo = branding?.logoFallback || '/assets/logo/logo-gold-dark.png';
   const currentLogoSrc = isTransparent ? (branding?.logoLight || fallbackLogo) : (branding?.logoDark || fallbackLogo);
 
   // Detect scroll to toggle header background
@@ -77,7 +82,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       {/* Modernized Fixed Header */}
       <header
         className={headerClassName}
-        style={{ backgroundColor: headerBackgroundColor }}
+      // style={{ backgroundColor: headerBackgroundColor }} // Removed to rely on classes for smooth transition
       >
         <div className={headerContainer}>
           <div className={`flex justify-between items-center transition-all duration-700 ease-in-out ${isScrolled ? 'h-20 md:h-24' : 'h-28 md:h-36'}`}>
@@ -88,7 +93,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 <img
                   src={currentLogoSrc}
                   alt="Avanti Advisory Group logo"
-                  className="h-20 md:h-28 w-auto object-contain bg-transparent transition-all duration-500"
+                  className={`h-20 md:h-28 w-auto object-contain bg-transparent transition-all duration-500 ${isScrolled ? 'h-16 md:h-20' : 'h-24 md:h-32'}`}
                   onError={(event) => {
                     const target = event.currentTarget as HTMLImageElement;
                     // Prevent infinite loop if fallback also fails

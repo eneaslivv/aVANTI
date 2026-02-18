@@ -707,16 +707,29 @@ export const CMSProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         updates.content = newJson;
       }
 
-      // Perform the update
-      if (Object.keys(updates).length > 0) {
-        const { error } = await supabase
-          .from('pages')
-          .update(updates)
-          .eq('slug', page)
-          .eq('language', language);
+      // 3. Execute Update (using Upsert to handle creation if missing)
+      const upsertData: any = {
+        slug: page,
+        language,
+        title: (pageContent[page] as any).hero?.title || 'Untitled Page', // Required for insert
+        is_published: true,
+        ...updates
+      };
 
-        if (error) throw error;
+      // Ensure content is merged if it exists, or use empty object for new row
+      if (!upsertData.content && !isJsonUpdate) {
+        // If we aren't updating content, pass the existing content (would require fetch)
+        // OR validation: We rely on the fact that if it exists, update touches specific cols.
+        // If it doesn't exist, content defaults to {} in DB.
+        // For upsert, we should try to avoid overwriting content if we are only updating specific cols like `hero_image_url`
+        // BUT `upsert` updates only provided columns on conflict.
       }
+
+      const { error } = await supabase
+        .from('pages')
+        .upsert(upsertData, { onConflict: 'slug, language' });
+
+      if (error) throw error;
 
       setLastSaved(new Date());
     } catch (err) {
