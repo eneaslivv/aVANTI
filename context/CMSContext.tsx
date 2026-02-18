@@ -725,9 +725,14 @@ export const CMSProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         // BUT `upsert` updates only provided columns on conflict.
       }
 
-      const { error } = await supabase
+      console.log('Attemping upsert for:', upsertData);
+
+      const { data: upsertResult, error } = await supabase
         .from('pages')
-        .upsert(upsertData, { onConflict: 'slug, language' });
+        .upsert(upsertData, { onConflict: 'slug, language' })
+        .select();
+
+      console.log('Upsert result:', { upsertResult, error });
 
       if (error) throw error;
 
