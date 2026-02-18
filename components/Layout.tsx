@@ -101,8 +101,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   onError={(event) => {
                     const target = event.currentTarget as HTMLImageElement;
                     // Prevent infinite loop if fallback also fails
-                    if (target.src !== fallbackLogo && target.src.indexOf('logo-white.png') === -1) {
-                      target.src = fallbackLogo;
+                    if (target.src !== defaultFallback && target.src.indexOf('logo-white.png') === -1) {
+                      target.src = defaultFallback;
                     } else {
                       setLogoError(true);
                     }
