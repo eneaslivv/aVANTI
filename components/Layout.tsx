@@ -307,7 +307,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 <img
                   src={logoDark}
                   alt="Avanti Advisory Group"
-                  className="h-14 w-auto object-contain"
+                  className="h-24 w-auto object-contain"
                   onError={(e) => { (e.currentTarget as HTMLImageElement).src = logoLight; }}
                 />
               </Link>
