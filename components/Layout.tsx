@@ -88,7 +88,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 <img
                   src={currentLogoSrc}
                   alt="Avanti Advisory Group logo"
-                  className="h-10 md:h-12 w-auto object-contain bg-transparent transition-all duration-500"
+                  className="h-14 md:h-16 w-auto object-contain bg-transparent transition-all duration-500"
                   onError={(event) => {
                     const target = event.currentTarget as HTMLImageElement;
                     // Prevent infinite loop if fallback also fails
@@ -101,18 +101,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 />
               ) : (
                 <div className={`relative overflow-hidden rounded-sm shadow-sm transition-all duration-500 ${isScrolled ? 'scale-90 md:scale-95' : 'scale-100'}`}>
-                  <svg className="w-10 h-10 md:w-12 md:h-12" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <svg className="w-14 h-14 md:w-16 md:h-16" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <rect width="48" height="48" fill={isTransparent ? '#BD9F63' : '#1A1A1A'} className="transition-colors duration-700" />
                     <path d="M24 10L36 38H30L24 22L18 38H12L24 10Z" fill={isTransparent ? 'white' : '#BD9F63'} className="transition-colors duration-700" />
                   </svg>
                 </div>
               )}
-
-              {/* Brand Text - Always Visible and Aligned */}
-              <div className="flex flex-col justify-center">
-                <span className={`text-xl md:text-2xl font-serif font-bold tracking-tight leading-none transition-all duration-700 ${isTransparent ? 'text-white' : 'text-avanti-900'} ${isScrolled ? 'md:text-xl' : ''}`}>AVANTI</span>
-                <span className={`text-[8px] md:text-[10px] font-sans uppercase tracking-[0.25em] leading-tight mt-1 font-semibold transition-all duration-700 ${isTransparent ? 'text-avanti-gold-light' : 'text-avanti-gold'} ${isScrolled ? 'opacity-0 h-0 mt-0 pointer-events-none' : 'opacity-100'}`}>Advisory Group</span>
-              </div>
             </Link>
 
             {/* Desktop Navigation */}
