@@ -31,6 +31,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const headerClassName = `fixed w-full top-0 z-50 transition-all duration-500 ease-in-out ${headerBackgroundClass}`;
 
   // Smart Fallback: Avoid flash by using correct default logo for background
+  const defaultFallback = isTransparent ? '/assets/logo/logo-gold-white.png' : '/assets/logo/logo-gold-dark.png';
   const logoLight = branding?.logoLight || '/assets/logo/logo-gold-white.png';
   const logoDark = branding?.logoDark || '/assets/logo/logo-gold-dark.png';
 
