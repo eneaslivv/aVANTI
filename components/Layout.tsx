@@ -23,14 +23,18 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const headerContainer = gridContainer;
   const branding = pageContent?.home?.branding;
 
-  // Smoother transition: Use opacity/transform for background instead of raw switch
-  const headerBackgroundClass = isTransparent ? 'bg-transparent border-transparent shadow-none py-4' : 'bg-avanti-900/95 border-white/10 shadow-lg backdrop-blur-md py-2';
+  // Smoother transition: Border only appears on scroll
+  const headerBackgroundClass = isTransparent
+    ? 'bg-transparent shadow-none py-4'
+    : 'bg-avanti-900/95 border-b border-white/10 shadow-lg backdrop-blur-md py-2';
 
-  const headerClassName = `fixed w-full top-0 z-50 transition-all duration-500 ease-in-out border-b ${headerBackgroundClass}`;
+  const headerClassName = `fixed w-full top-0 z-50 transition-all duration-500 ease-in-out ${headerBackgroundClass}`;
 
-  // Use Avanti Gold as default fallback to match new branding
-  const fallbackLogo = branding?.logoFallback || '/assets/logo/logo-gold-dark.png';
-  const currentLogoSrc = isTransparent ? (branding?.logoLight || fallbackLogo) : (branding?.logoDark || fallbackLogo);
+  // Smart Fallback: Avoid flash by using correct default logo for background
+  const logoLight = branding?.logoLight || '/assets/logo/logo-gold-white.png';
+  const logoDark = branding?.logoDark || '/assets/logo/logo-gold-dark.png';
+
+  const currentLogoSrc = isTransparent ? logoLight : logoDark;
 
   // Detect scroll to toggle header background
   useEffect(() => {
