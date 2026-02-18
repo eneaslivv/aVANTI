@@ -51,23 +51,27 @@ const Home: React.FC = () => {
                         <div className="w-full max-w-4xl lg:max-w-5xl">
 
                             <h1 className="font-serif text-4xl md:text-6xl text-white leading-[1.1] mb-6 drop-shadow-2xl tracking-tight">
-                                <WordReveal text={hero.title} delay={0} className="text-white" />
+                                <Reveal delay={0.1} duration="slow">
+                                    {hero.title}
+                                </Reveal>
                             </h1>
 
                             <h2 className="font-serif text-3xl md:text-4xl mb-10 drop-shadow-2xl font-medium leading-tight text-gray-100 tracking-tight">
-                                <WordReveal text={hero.subtitle} delay={0.4} gradient={false} className="text-gray-100" />
+                                <Reveal delay={0.4} duration="slow">
+                                    <span className="text-gray-100">{hero.subtitle}</span>
+                                </Reveal>
                             </h2>
 
-                            <Reveal delay={1.2} duration="slow">
-                                <p className="text-base md:text-lg text-gray-200 mb-12 leading-relaxed font-normal relative z-20 drop-shadow-xl">
+                            <Reveal delay={0.8} duration="slow">
+                                <p className="text-base md:text-lg text-gray-200 mb-12 leading-relaxed font-normal relative z-20 drop-shadow-xl max-w-2xl">
                                     {hero.description}
                                 </p>
 
                                 <Link
                                     to="/about"
-                                    className="inline-flex items-center text-white border-b-2 border-white pb-2 hover:border-avanti-gold transition-all duration-300 uppercase tracking-widest text-xs font-bold hover:text-avanti-gold group"
+                                    className="inline-flex items-center text-white border-b-2 border-white pb-2 hover:border-avanti-gold transition-all duration-500 uppercase tracking-widest text-xs font-bold hover:text-avanti-gold group"
                                 >
-                                    {t('home.readMore')} <ArrowRight className="ml-3 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                                    {t('home.readMore')} <ArrowRight className="ml-3 w-5 h-5 group-hover:translate-x-1 transition-transform duration-500" />
                                 </Link>
                             </Reveal>
 
@@ -110,11 +114,11 @@ const Home: React.FC = () => {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
 
                         {/* Card 1: Fiscalidad */}
-                        <Reveal delay={0.2} className="h-full">
-                            <div className="group bg-white border border-stone-200 hover:border-stone-300 hover:shadow-2xl hover:shadow-stone-200/60 transition-all duration-700 ease-out flex flex-col h-full overflow-hidden rounded-sm relative transform hover:-translate-y-1">
+                        <Reveal delay={0.2} className="h-full" duration="slow">
+                            <div className="group bg-white border border-stone-200 hover:border-stone-300 hover:shadow-2xl hover:shadow-stone-200/60 transition-all duration-1000 ease-out flex flex-col h-full overflow-hidden rounded-sm relative transform hover:-translate-y-1">
                                 {/* Visual Area */}
                                 <div className="h-64 bg-stone-100 relative border-b border-stone-100 flex items-center justify-center p-8 overflow-hidden">
-                                    <div className="absolute inset-0 z-0 opacity-80 blur-[2px] scale-105 group-hover:scale-100 group-hover:blur-0 group-hover:opacity-100 transition-all duration-1000 ease-out">
+                                    <div className="absolute inset-0 z-0 opacity-80 blur-[2px] scale-105 group-hover:scale-100 group-hover:blur-0 group-hover:opacity-100 transition-all duration-[1500ms] ease-out">
                                         <img src={cards.image1} className="w-full h-full object-cover grayscale-[20%]" alt="Architecture pattern" />
                                     </div>
                                     <div className="relative z-10 w-32 perspective-1000">
@@ -235,8 +239,8 @@ const Home: React.FC = () => {
                         </Reveal>
 
                         {/* Card 3: Crecimiento */}
-                        <Reveal delay={0.6} className="h-full">
-                            <div className="group bg-white border border-stone-200 hover:border-stone-300 hover:shadow-2xl hover:shadow-stone-200/60 transition-all duration-700 ease-out flex flex-col h-full overflow-hidden rounded-sm relative transform hover:-translate-y-1">
+                        <Reveal delay={0.6} className="h-full" duration="slow">
+                            <div className="group bg-white border border-stone-200 hover:border-stone-300 hover:shadow-2xl hover:shadow-stone-200/60 transition-all duration-1000 ease-out flex flex-col h-full overflow-hidden rounded-sm relative transform hover:-translate-y-1">
                                 <div className="h-64 bg-stone-100 relative border-b border-stone-100 flex items-center justify-center p-8 overflow-hidden">
                                     <div className="absolute inset-0 z-0 opacity-80 blur-[2px] scale-105 group-hover:scale-100 group-hover:blur-0 group-hover:opacity-100 transition-all duration-1000 ease-out">
                                         <img src={cards.image3} className="w-full h-full object-cover grayscale-[20%]" alt="Corporate meeting" />
