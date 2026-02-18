@@ -652,7 +652,8 @@ export const CMSProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const updatePageContent = async (page: keyof PageContent, section: string, data: any) => {
     try {
       setIsSaving(true);
-      // 1. Optimistic Update (Update local state immediately)
+
+      // 1. Optimistic Update (Update local state immediately for BOTH languages)
       const updater = (prev: PageContent) => ({
         ...prev,
         [page]: {
@@ -664,77 +665,85 @@ export const CMSProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       if (language === 'es') setPageContentEs(updater);
       else setPageContentEn(updater);
 
-      // 2. Prepare DB Updates
-      const updates: any = {};
-      let isJsonUpdate = false;
+      // Detect which fields are "media" (images, logos) vs "text"
+      // Media fields should be synced to BOTH languages
+      const IMAGE_KEYS = ['image', 'images', 'image1', 'image2', 'image3', 'image4',
+        'logoLight', 'logoDark', 'logoFallback', 'transparentBackground', 'solidBackground'];
 
-      // Handle Columns (Hero sections map to specific columns)
-      if (section === 'hero') {
-        if (data.title !== undefined) updates.title = data.title;
-        if (data.subtitle !== undefined) updates.subtitle = data.subtitle;
-        // Home specific columns
-        if (page === 'home') {
-          if (data.description !== undefined) updates.description = data.description;
+      const mediaData: any = {};
+      for (const [k, v] of Object.entries(data)) {
+        if (IMAGE_KEYS.includes(k)) mediaData[k] = v;
+      }
+
+      const otherLanguage = language === 'es' ? 'en' : 'es';
+
+      // Helper: upsert a row for a given language
+      const upsertForLanguage = async (lang: string, overrideData: any) => {
+        const updates: any = {};
+        let isJsonUpdate = false;
+
+        if (section === 'hero') {
+          if (overrideData.title !== undefined) updates.title = overrideData.title;
+          if (overrideData.subtitle !== undefined) updates.subtitle = overrideData.subtitle;
+          if (page === 'home' && overrideData.description !== undefined) updates.description = overrideData.description;
+          if (overrideData.image !== undefined) updates.hero_image_url = overrideData.image;
+          isJsonUpdate = true;
+        } else {
+          isJsonUpdate = true;
         }
 
-        // Image update for both Home and About
-        if (data.image !== undefined) updates.hero_image_url = data.image;
+        if (isJsonUpdate) {
+          const { data: currentRow, error: fetchError } = await supabase
+            .from('pages')
+            .select('content')
+            .eq('slug', page)
+            .eq('language', lang)
+            .single();
 
-        // Always sync the JSONB content to ensure all fields (like 'images') are persisted
-        isJsonUpdate = true;
-      } else {
-        // Other sections live in the JSONB 'content' column (including collage)
-        isJsonUpdate = true;
-      }
+          if (fetchError && fetchError.code !== 'PGRST116') throw fetchError;
 
-      // 3. Execute Update
-      if (isJsonUpdate) {
-        // Fetch current JSON content to merge with new data
-        const { data: currentRow, error: fetchError } = await supabase
-          .from('pages')
-          .select('content')
-          .eq('slug', page)
-          .eq('language', language)
-          .single();
+          const currentJson = currentRow?.content || {};
+          const newJson = {
+            ...currentJson,
+            [section]: { ...(currentJson[section] || {}), ...overrideData }
+          };
+          updates.content = newJson;
+        }
 
-        if (fetchError && fetchError.code !== 'PGRST116') throw fetchError;
-
-        const currentJson = currentRow?.content || {};
-        const newJson = {
-          ...currentJson,
-          [section]: { ...(currentJson[section] || {}), ...data }
+        const currentContent = lang === language ? pageContent : (lang === 'es' ? pageContentEs : pageContentEn);
+        const upsertData: any = {
+          slug: page,
+          language: lang,
+          title: (currentContent[page] as any).hero?.title || 'Untitled Page',
+          is_published: true,
+          ...updates
         };
-        updates.content = newJson;
-      }
 
-      // 3. Execute Update (using Upsert to handle creation if missing)
-      const upsertData: any = {
-        slug: page,
-        language,
-        title: (pageContent[page] as any).hero?.title || 'Untitled Page', // Required for insert
-        is_published: true,
-        ...updates
+        const { error } = await supabase
+          .from('pages')
+          .upsert(upsertData, { onConflict: 'slug, language' })
+          .select();
+
+        if (error) throw error;
       };
 
-      // Ensure content is merged if it exists, or use empty object for new row
-      if (!upsertData.content && !isJsonUpdate) {
-        // If we aren't updating content, pass the existing content (would require fetch)
-        // OR validation: We rely on the fact that if it exists, update touches specific cols.
-        // If it doesn't exist, content defaults to {} in DB.
-        // For upsert, we should try to avoid overwriting content if we are only updating specific cols like `hero_image_url`
-        // BUT `upsert` updates only provided columns on conflict.
+      // Always save text+media for the current language
+      await upsertForLanguage(language, data);
+
+      // If there are media fields, also sync them to the other language
+      if (Object.keys(mediaData).length > 0) {
+        await upsertForLanguage(otherLanguage, mediaData);
+        // Also update local state for the other language
+        const otherUpdater = (prev: PageContent) => ({
+          ...prev,
+          [page]: {
+            ...prev[page],
+            [section]: { ...(prev[page] as any)[section], ...mediaData }
+          }
+        });
+        if (language === 'es') setPageContentEn(otherUpdater);
+        else setPageContentEs(otherUpdater);
       }
-
-      console.log('Attemping upsert for:', upsertData);
-
-      const { data: upsertResult, error } = await supabase
-        .from('pages')
-        .upsert(upsertData, { onConflict: 'slug, language' })
-        .select();
-
-      console.log('Upsert result:', { upsertResult, error });
-
-      if (error) throw error;
 
       setLastSaved(new Date());
     } catch (err) {
