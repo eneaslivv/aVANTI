@@ -37,15 +37,47 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   const currentLogoSrc = isTransparent ? logoLight : logoDark;
 
-  // ... (scroll effect)
+  // Detect scroll to toggle header background
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 10);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   useEffect(() => {
     setLogoError(false);
   }, [currentLogoSrc]);
 
-  // ... (menu toggles)
+  const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+  const closeMenu = () => {
+    setIsMenuOpen(false);
+    setIsServicesOpen(false);
+  };
 
-  // ... (serviceGroups)
+  const serviceGroups = [
+    {
+      title: t('services.fiscal'),
+      icon: FileText,
+      items: [
+        { name: language === 'es' ? 'Impuestos a Empresas' : 'Corporate Taxes', path: '/services/impuestos-empresas' },
+        { name: language === 'es' ? 'Impuestos a Personas' : 'Individual Taxes', path: '/services/impuestos-personas' },
+        { name: language === 'es' ? 'Impuestos Extranjeros' : 'Foreign Taxes', path: '/services/impuestos-extranjeros' },
+        { name: language === 'es' ? 'Formularios Atrasados' : 'Streamlined / Delinquent', path: '/services/streamlined-delinquent' },
+      ]
+    },
+    {
+      title: t('services.consulting'),
+      icon: PieChart,
+      items: [
+        { name: language === 'es' ? 'Contabilidad y Bookkeeping' : 'Accounting & Bookkeeping', path: '/services/contabilidad' },
+        { name: language === 'es' ? 'Herencias y Fideicomisos' : 'Estates & Trusts', path: '/services/herencias-fideicomisos' },
+        { name: language === 'es' ? 'Consultoría Fiscal' : 'Tax Consulting', path: '/services/consultoria-fiscal' },
+        { name: language === 'es' ? 'Comunicaciones y Branding' : 'Branding & Comms', path: '/services/branding' },
+      ]
+    }
+  ];
 
   // Common Nav Text Color Logic
   // When transparent (dark bg): white text
@@ -186,7 +218,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           </div>
         </div>
 
-        {/* Mobile Navigation */}
         {/* Mobile Navigation */}
         <div
           className={`md:hidden absolute w-full left-0 bg-white/95 backdrop-blur-2xl border-t border-gray-100 shadow-2xl transition-all duration-500 ease-in-out z-40 overflow-hidden ${isMenuOpen ? 'max-h-[85vh] opacity-100 visible' : 'max-h-0 opacity-0 invisible'
