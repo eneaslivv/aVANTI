@@ -80,7 +80,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         style={{ backgroundColor: headerBackgroundColor }}
       >
         <div className={headerContainer}>
-          <div className={`flex justify-between items-center transition-all duration-700 ease-in-out ${isScrolled ? 'h-16 md:h-20' : 'h-24'}`}>
+          <div className={`flex justify-between items-center transition-all duration-700 ease-in-out ${isScrolled ? 'h-20 md:h-24' : 'h-28 md:h-36'}`}>
             {/* Logo */}
             <Link to="/" className="flex items-center gap-3 md:gap-4 group" onClick={closeMenu}>
               {/* Logo Image or Fallback Icon */}
@@ -88,7 +88,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 <img
                   src={currentLogoSrc}
                   alt="Avanti Advisory Group logo"
-                  className="h-14 md:h-16 w-auto object-contain bg-transparent transition-all duration-500"
+                  className="h-20 md:h-28 w-auto object-contain bg-transparent transition-all duration-500"
                   onError={(event) => {
                     const target = event.currentTarget as HTMLImageElement;
                     // Prevent infinite loop if fallback also fails

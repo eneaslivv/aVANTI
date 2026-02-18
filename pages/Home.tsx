@@ -24,7 +24,7 @@ const Home: React.FC = () => {
     return (
         <div className="flex flex-col">
             {/* Hero / Welcome Banner with Background Slider */}
-            <section className={`relative overflow-hidden pt-32 pb-24 md:pt-48 md:pb-40 bg-avanti-900 flex items-center justify-start min-h-[85vh] ${layoutPadding}`}>
+            <section className={`relative overflow-hidden pt-32 pb-24 md:pt-48 md:pb-40 bg-avanti-900 flex items-center justify-start min-h-[85vh]`}>
 
                 {/* Background Slider Layer */}
                 <div className="absolute inset-0 z-0 pointer-events-none select-none">
@@ -44,7 +44,7 @@ const Home: React.FC = () => {
                 </div>
 
                 {/* Content Container */}
-                <div className="relative z-10 w-full max-w-[1400px]">
+                <div className={`relative z-10 w-full ${gridContainer}`}>
                     <div className="flex flex-col items-start text-left">
 
                         {/* Clean Text Container aligned with nav */}
