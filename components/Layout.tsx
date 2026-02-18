@@ -303,15 +303,15 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           </div>
           <div className="flex flex-col md:flex-row justify-between items-end border-t border-gray-300/50 pt-8 gap-6">
             <div className="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-8">
-              <Link to="/" className="w-10 h-10 bg-avanti-900 flex items-center justify-center rounded-full hover:scale-110 transition-transform shadow-lg">
-                <svg className="w-5 h-5" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M24 10L36 38H30L24 22L18 38H12L24 10Z" fill="#BD9F63" />
-                </svg>
+              <Link to="/" className="hover:opacity-80 transition-opacity">
+                <img
+                  src="/assets/logo/logo-gold-dark.png"
+                  alt="Avanti Advisory Group"
+                  className="h-14 w-auto object-contain"
+                  onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/assets/logo/logo-gold-white.png'; }}
+                />
               </Link>
-              <div className="flex flex-col">
-                <span className="text-xs font-bold text-avanti-900 uppercase tracking-widest">Avanti Advisory Group</span>
-                <span className="text-[10px] text-gray-400">© {new Date().getFullYear()} {t('footer.rights')}</span>
-              </div>
+              <span className="text-[10px] text-gray-400">© {new Date().getFullYear()} {t('footer.rights')}</span>
             </div>
             <div className="flex flex-col-reverse md:flex-row items-end md:items-center gap-6 w-full md:w-auto">
               <div className="flex gap-6 text-[10px] font-bold uppercase tracking-widest text-gray-400">
