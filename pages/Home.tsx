@@ -90,6 +90,12 @@ const Home: React.FC = () => {
                         />
                     ))}
                 </div>
+
+                {/* Scroll Down Indicator */}
+                <div className="absolute bottom-10 right-10 z-20 hidden md:flex flex-col items-center gap-2 animate-bounce opacity-80">
+                    <span className="text-[10px] uppercase tracking-widest text-white/80 font-semibold">Scroll</span>
+                    <Mouse className="w-6 h-6 text-white/80" />
+                </div>
             </section>
 
             {/* Services Module */}
@@ -171,8 +177,8 @@ const Home: React.FC = () => {
                         </Reveal>
 
                         {/* Card 2: Finanzas */}
-                        <Reveal delay={0.4} className="h-full">
-                            <div className="group bg-white border border-stone-200 hover:border-stone-300 hover:shadow-2xl hover:shadow-stone-200/60 transition-all duration-700 ease-out flex flex-col h-full overflow-hidden rounded-sm relative transform hover:-translate-y-1">
+                        <Reveal delay={0.4} className="h-full" duration="slow">
+                            <div className="group bg-white border border-stone-200 hover:border-stone-300 hover:shadow-2xl hover:shadow-stone-200/60 transition-all duration-1000 ease-out flex flex-col h-full overflow-hidden rounded-sm relative transform hover:-translate-y-1">
                                 <div className="h-64 bg-stone-100 relative border-b border-stone-100 flex items-center justify-center p-8 overflow-hidden">
                                     <div className="absolute inset-0 z-0 opacity-80 blur-[2px] scale-105 group-hover:scale-100 group-hover:blur-0 group-hover:opacity-100 transition-all duration-1000 ease-out">
                                         <img src={cards.image2} className="w-full h-full object-cover grayscale-[20%]" alt="Financial abstract" />
