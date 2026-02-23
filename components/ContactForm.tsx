@@ -6,9 +6,10 @@ import { useCMS } from '../context/CMSContext';
 
 interface ContactFormProps {
   defaultReason?: ContactReason;
+  sourcePage?: string;
 }
 
-const ContactForm: React.FC<ContactFormProps> = ({ defaultReason = ContactReason.General }) => {
+const ContactForm: React.FC<ContactFormProps> = ({ defaultReason = ContactReason.General, sourcePage }) => {
   // Access CMS Context if available
   const { addMessage, t } = useCMS();
 
@@ -33,7 +34,15 @@ const ContactForm: React.FC<ContactFormProps> = ({ defaultReason = ContactReason
     setError(null);
 
     try {
-      await addMessage(formData);
+      // Prepend source page if provided
+      const finalMessage = sourcePage
+        ? `[Página: ${sourcePage}]\n${formData.message}`
+        : formData.message;
+
+      await addMessage({
+        ...formData,
+        message: finalMessage
+      });
 
       setSuccess(true);
       setFormData({

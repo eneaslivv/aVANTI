@@ -195,6 +195,7 @@ const PageEditor: React.FC = () => {
                             {selectedType === 'static' ? (
                                 <>
                                     <option value="home">Inicio (Home)</option>
+                                    <option value="payment">Pagos (Payment)</option>
                                     <option value="about">Sobre Nosotros</option>
                                     <option value="resources">Recursos (Blog)</option>
                                     <option value="contact">Contacto</option>
@@ -474,6 +475,38 @@ const PageEditor: React.FC = () => {
                                         />
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* === PAYMENT EDITOR === */}
+                    {selectedType === 'static' && selectedId === 'payment' && (
+                        <div className="animate-page-enter">
+                            <div className={sectionHeaderClass}>Hero Section</div>
+                            <div className="space-y-6 mb-8">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label className={labelClass}>Título Hero</label>
+                                        <input
+                                            value={pageContent.payment.hero.title}
+                                            onChange={(e) => handleStaticUpdate('payment', 'hero', 'title', e.target.value)}
+                                            className={inputClass}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className={labelClass}>Subtítulo Hero</label>
+                                        <input
+                                            value={pageContent.payment.hero.subtitle}
+                                            onChange={(e) => handleStaticUpdate('payment', 'hero', 'subtitle', e.target.value)}
+                                            className={inputClass}
+                                        />
+                                    </div>
+                                </div>
+                                <ImageField
+                                    label="Imagen de Fondo"
+                                    value={pageContent.payment.hero.image}
+                                    onUpdate={(url) => handleStaticUpdate('payment', 'hero', 'image', url)}
+                                />
                             </div>
                         </div>
                     )}

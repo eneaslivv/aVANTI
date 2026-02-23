@@ -1,15 +1,78 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Compass, Anchor, ScrollText, Check, Landmark, Calculator, BarChart2, Mouse } from 'lucide-react';
+import { ArrowRight, Compass, Anchor, ScrollText, Check, Landmark, Calculator, BarChart2, Mouse, Loader2 } from 'lucide-react';
 import { useCMS } from '../context/CMSContext';
 import { Reveal, WordReveal } from '../components/Reveal';
+import { ContactReason } from '../types';
 
 const Home: React.FC = () => {
-    const { pageContent, t } = useCMS();
+    const { pageContent, t, addMessage } = useCMS();
     const { hero, collage, cards, precision, finalCta } = pageContent.home;
     const { images: heroImages } = hero;
 
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [success, setSuccess] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    const [formData, setFormData] = useState({
+        name: '',
+        email: '',
+        reason: ContactReason.General,
+        message: '',
+        privacy: false
+    });
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const { id, value, type } = e.target as HTMLInputElement;
+        if (type === 'checkbox') {
+            setFormData(prev => ({ ...prev, [id]: (e.target as HTMLInputElement).checked }));
+        } else {
+            setFormData(prev => ({ ...prev, [id]: value }));
+        }
+    };
+
+    const handleInterestChange = (interest: ContactReason) => {
+        setFormData(prev => ({ ...prev, reason: interest }));
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        if (!formData.privacy) {
+            setError(t('contact.privacyError') || 'Debe aceptar la política de privacidad');
+            return;
+        }
+
+        setIsSubmitting(true);
+        setError(null);
+
+        try {
+            await addMessage({
+                name: formData.name,
+                email: formData.email,
+                phone: '', // Home form doesn't have phone
+                reason: formData.reason,
+                message: `[Página: Home]\n${formData.message}`
+            });
+
+            setSuccess(true);
+            setFormData({
+                name: '',
+                email: '',
+                reason: ContactReason.General,
+                message: '',
+                privacy: false
+            });
+
+            setTimeout(() => setSuccess(false), 5000);
+        } catch (err) {
+            console.error('Submission error:', err);
+            setError(t('contact.formError') || 'Hubo un error al enviar su mensaje.');
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -24,7 +87,7 @@ const Home: React.FC = () => {
     return (
         <div className="flex flex-col">
             {/* Hero / Welcome Banner with Background Slider */}
-            <section className={`relative overflow-hidden pt-32 pb-24 md:pt-48 md:pb-40 bg-avanti-900 flex items-center justify-start min-h-[85vh]`}>
+            <section className={`relative overflow-hidden pt-24 pb-16 md:pt-48 md:pb-40 bg-avanti-900 flex items-center justify-start min-h-[75vh] md:min-h-[85vh]`}>
 
                 {/* Background Slider Layer */}
                 <div className="absolute inset-0 z-0 pointer-events-none select-none">
@@ -50,7 +113,7 @@ const Home: React.FC = () => {
                         {/* Clean Text Container aligned with nav */}
                         <div className="w-full max-w-4xl lg:max-w-5xl">
 
-                            <h1 className="font-serif text-4xl md:text-6xl text-white leading-[1.1] mb-6 drop-shadow-2xl tracking-tight">
+                            <h1 className="font-serif text-3xl md:text-6xl text-white leading-[1.1] mb-6 drop-shadow-2xl tracking-tight">
                                 <Reveal delay={0.1} duration="slow">
                                     {hero.title}
                                 </Reveal>
@@ -99,7 +162,7 @@ const Home: React.FC = () => {
             </section>
 
             {/* Services Module */}
-            <section className="bg-stone-50 relative overflow-hidden antialiased text-stone-900 selection:bg-stone-200 selection:text-stone-900 py-24 md:py-32 border-t border-stone-200">
+            <section className="bg-stone-50 relative overflow-hidden antialiased text-stone-900 selection:bg-stone-200 selection:text-stone-900 py-16 md:py-32 border-t border-stone-200">
                 <div className={gridContainer}>
 
                     {/* Section Header */}
@@ -123,37 +186,12 @@ const Home: React.FC = () => {
                         <Reveal delay={0.2} className="h-full" duration="slow">
                             <div className="group bg-white border border-stone-200 hover:border-stone-300 hover:shadow-2xl hover:shadow-stone-200/60 transition-all duration-1000 ease-out flex flex-col h-full overflow-hidden rounded-sm relative transform hover:-translate-y-1">
                                 {/* Visual Area */}
-                                <div className="h-64 bg-stone-100 relative border-b border-stone-100 flex items-center justify-center p-8 overflow-hidden">
-                                    <div className="absolute inset-0 z-0 opacity-80 blur-[2px] scale-105 group-hover:scale-100 group-hover:blur-0 group-hover:opacity-100 transition-all duration-[1500ms] ease-out">
-                                        <img src={cards.image1} className="w-full h-full object-cover grayscale-[20%]" alt="Architecture pattern" />
-                                    </div>
-                                    <div className="relative z-10 w-32 perspective-1000">
-                                        <div className="absolute top-0 left-0 w-full h-full bg-stone-100/80 border border-stone-200 rounded-sm -z-10 origin-bottom-left transition-all duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:rotate-6 group-hover:translate-x-6 group-hover:translate-y-2 group-hover:bg-white/90"></div>
-                                        <div className="bg-white rounded-sm shadow-xl shadow-stone-900/10 border border-stone-200 p-4 relative mx-auto backdrop-blur-sm bg-white/95 transition-all duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:-translate-y-2 group-hover:-rotate-3 group-hover:shadow-2xl">
-                                            <div className="space-y-2 mb-4">
-                                                <div className="flex justify-between items-start mb-3">
-                                                    <div className="w-8 h-8 rounded-full border border-stone-100 bg-stone-50 flex items-center justify-center transition-transform duration-500 group-hover:scale-110">
-                                                        <div className="w-3 h-3 bg-stone-300 rounded-full group-hover:bg-emerald-400 transition-colors duration-500"></div>
-                                                    </div>
-                                                    <div className="w-8 h-1 bg-stone-100 rounded-full"></div>
-                                                </div>
-                                                <div className="w-full h-1 bg-stone-100 rounded-full overflow-hidden">
-                                                    <div className="h-full bg-stone-200 w-0 group-hover:w-full transition-all duration-1000 ease-out delay-100"></div>
-                                                </div>
-                                                <div className="w-3/4 h-1 bg-stone-100 rounded-full overflow-hidden">
-                                                    <div className="h-full bg-stone-200 w-0 group-hover:w-3/4 transition-all duration-1000 ease-out delay-200"></div>
-                                                </div>
-                                                <div className="w-5/6 h-1 bg-stone-100 rounded-full overflow-hidden">
-                                                    <div className="h-full bg-stone-200 w-0 group-hover:w-5/6 transition-all duration-1000 ease-out delay-300"></div>
-                                                </div>
-                                            </div>
-                                            <div className="absolute -right-3 -bottom-3 bg-white border border-stone-100 shadow-lg rounded-full p-1.5 flex items-center justify-center z-20 transition-all duration-500 ease-spring group-hover:scale-125 group-hover:rotate-12 group-hover:shadow-emerald-100 delay-100">
-                                                <div className="bg-emerald-50 text-emerald-600 rounded-full p-1">
-                                                    <Check className="w-3 h-3" />
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                                <div className="h-64 bg-stone-100 relative border-b border-stone-100 overflow-hidden">
+                                    <img
+                                        src={cards.image1}
+                                        className="w-full h-full object-cover transition-all duration-[1500ms] ease-out group-hover:scale-110"
+                                        alt={t('home.card1.title')}
+                                    />
                                 </div>
                                 <div className="p-8 flex flex-col flex-grow relative z-10 bg-white">
                                     <div className="flex items-center gap-2 mb-4">
@@ -179,49 +217,12 @@ const Home: React.FC = () => {
                         {/* Card 2: Finanzas */}
                         <Reveal delay={0.4} className="h-full" duration="slow">
                             <div className="group bg-white border border-stone-200 hover:border-stone-300 hover:shadow-2xl hover:shadow-stone-200/60 transition-all duration-1000 ease-out flex flex-col h-full overflow-hidden rounded-sm relative transform hover:-translate-y-1">
-                                <div className="h-64 bg-stone-100 relative border-b border-stone-100 flex items-center justify-center p-8 overflow-hidden">
-                                    <div className="absolute inset-0 z-0 opacity-80 blur-[2px] scale-105 group-hover:scale-100 group-hover:blur-0 group-hover:opacity-100 transition-all duration-1000 ease-out">
-                                        <img src={cards.image2} className="w-full h-full object-cover grayscale-[20%]" alt="Financial abstract" />
-                                    </div>
-                                    <div className="relative z-10 w-48 transition-all duration-700 ease-out group-hover:-translate-y-1">
-                                        <div className="bg-white/95 backdrop-blur-sm rounded-md border border-stone-200 shadow-xl shadow-stone-900/10 p-3 flex flex-col gap-3 group-hover:shadow-2xl transition-all duration-500">
-                                            <div className="flex items-center justify-between border-b border-stone-100 pb-2">
-                                                <div className="flex gap-1">
-                                                    <div className="w-2 h-2 rounded-full bg-stone-300 group-hover:bg-red-300 transition-colors duration-500 delay-75"></div>
-                                                    <div className="w-2 h-2 rounded-full bg-stone-200 group-hover:bg-amber-300 transition-colors duration-500 delay-100"></div>
-                                                    <div className="w-2 h-2 rounded-full bg-stone-200 group-hover:bg-green-300 transition-colors duration-500 delay-150"></div>
-                                                </div>
-                                                <div className="w-10 h-1 bg-stone-100 rounded-full group-hover:w-14 transition-all duration-500"></div>
-                                            </div>
-                                            <div className="space-y-2">
-                                                <div className="flex items-center justify-between opacity-50 transform transition-all duration-500 ease-out group-hover:translate-x-1 group-hover:opacity-70">
-                                                    <div className="flex items-center gap-2">
-                                                        <div className="w-1.5 h-1.5 rounded-full bg-orange-200"></div>
-                                                        <div className="w-12 h-1 bg-stone-300 rounded-full"></div>
-                                                    </div>
-                                                    <div className="w-8 h-1 bg-stone-200 rounded-full"></div>
-                                                </div>
-                                                <div className="flex items-center justify-between bg-stone-50 border border-stone-100 -mx-1 p-1.5 rounded-sm shadow-sm relative overflow-hidden transform transition-all duration-500 ease-spring delay-75 group-hover:scale-[1.03] group-hover:border-stone-300 group-hover:shadow-md group-hover:bg-white">
-                                                    <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-stone-800 transition-all duration-500 group-hover:bg-emerald-600"></div>
-                                                    <div className="flex items-center gap-2 pl-1">
-                                                        <div className="w-3 h-3 rounded-full bg-emerald-100 border border-emerald-200 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                                                            <Check className="w-2 h-2 text-emerald-600" />
-                                                        </div>
-                                                        <div className="w-16 h-1.5 bg-stone-800 rounded-full"></div>
-                                                    </div>
-                                                    <div className="w-10 h-1.5 bg-stone-800 rounded-full"></div>
-                                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out"></div>
-                                                </div>
-                                                <div className="flex items-center justify-between opacity-50 transform transition-all duration-500 ease-out delay-100 group-hover:translate-x-1 group-hover:opacity-70">
-                                                    <div className="flex items-center gap-2">
-                                                        <div className="w-1.5 h-1.5 rounded-full bg-stone-300"></div>
-                                                        <div className="w-10 h-1 bg-stone-300 rounded-full"></div>
-                                                    </div>
-                                                    <div className="w-6 h-1 bg-stone-200 rounded-full"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                                <div className="h-64 bg-stone-100 relative border-b border-stone-100 overflow-hidden">
+                                    <img
+                                        src={cards.image2}
+                                        className="w-full h-full object-cover transition-all duration-1000 ease-out group-hover:scale-110"
+                                        alt={t('home.card2.title')}
+                                    />
                                 </div>
                                 <div className="p-8 flex flex-col flex-grow relative z-10 bg-white">
                                     <div className="flex items-center gap-2 mb-4">
@@ -247,52 +248,12 @@ const Home: React.FC = () => {
                         {/* Card 3: Crecimiento */}
                         <Reveal delay={0.6} className="h-full" duration="slow">
                             <div className="group bg-white border border-stone-200 hover:border-stone-300 hover:shadow-2xl hover:shadow-stone-200/60 transition-all duration-1000 ease-out flex flex-col h-full overflow-hidden rounded-sm relative transform hover:-translate-y-1">
-                                <div className="h-64 bg-stone-100 relative border-b border-stone-100 flex items-center justify-center p-8 overflow-hidden">
-                                    <div className="absolute inset-0 z-0 opacity-80 blur-[2px] scale-105 group-hover:scale-100 group-hover:blur-0 group-hover:opacity-100 transition-all duration-1000 ease-out">
-                                        <img src={cards.image3} className="w-full h-full object-cover grayscale-[20%]" alt="Corporate meeting" />
-                                    </div>
-                                    <div className="relative z-10 w-48 transition-all duration-700 ease-out group-hover:-translate-y-2">
-                                        <div className="bg-white/95 backdrop-blur-sm rounded-md border border-stone-200 shadow-xl shadow-stone-900/10 overflow-hidden group-hover:shadow-2xl transition-all duration-500">
-                                            <div className="px-4 py-3 border-b border-stone-100 flex justify-between items-end bg-white/50">
-                                                <div>
-                                                    <div className="flex items-center gap-1.5 mb-1">
-                                                        <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></div>
-                                                        <div className="text-[9px] font-bold text-stone-400 uppercase tracking-widest group-hover:text-stone-600 transition-colors">Engagement</div>
-                                                    </div>
-                                                    <div className="overflow-hidden h-6 flex items-center">
-                                                        <div className="text-xl font-serif text-stone-900 leading-none transform transition-transform duration-500 group-hover:-translate-y-6">
-                                                            <div>+28.4%</div>
-                                                            <div className="text-emerald-600">+32.1%</div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div className="w-6 h-6 rounded-full bg-stone-100 border border-stone-200 flex items-center justify-center group-hover:border-emerald-200 group-hover:bg-emerald-50 transition-colors duration-500">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" className="w-3 h-3 text-stone-400 group-hover:text-emerald-500 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                                                </div>
-                                            </div>
-                                            <div className="h-16 w-full relative bg-stone-50/50 overflow-hidden">
-                                                <div className="absolute inset-0 w-full h-full">
-                                                    <div className="w-full h-full grid grid-cols-4 border-t border-stone-100">
-                                                        <div className="border-r border-stone-100/50"></div>
-                                                        <div className="border-r border-stone-100/50"></div>
-                                                        <div className="border-r border-stone-100/50"></div>
-                                                    </div>
-                                                </div>
-                                                <svg className="absolute bottom-0 left-0 w-full h-full overflow-visible" viewBox="0 0 100 40" preserveAspectRatio="none">
-                                                    <defs>
-                                                        <linearGradient id="chartGradient" x1="0" x2="0" y1="0" y2="1">
-                                                            <stop offset="0%" stopColor="#78716c" stopOpacity="0.1"></stop>
-                                                            <stop offset="100%" stopColor="#78716c" stopOpacity="0"></stop>
-                                                        </linearGradient>
-                                                    </defs>
-                                                    <path d="M0 35 C 20 32, 40 15, 60 20 S 80 5, 100 2 V 40 H 0 Z" fill="url(#chartGradient)" className="opacity-50 group-hover:opacity-80 transition-opacity duration-500"></path>
-                                                    <path d="M0 35 C 20 32, 40 15, 60 20 S 80 5, 100 2" fill="none" stroke="#44403c" strokeWidth="1.5" strokeLinecap="round" vectorEffect="non-scaling-stroke" className="transition-all duration-1000 group-hover:stroke-emerald-600"></path>
-                                                </svg>
-                                                <div className="absolute top-0 bottom-0 w-[1px] bg-stone-900/10 backdrop-blur-[1px] left-0 group-hover:left-[80%] transition-all duration-1000 ease-in-out z-10"></div>
-                                                <div className="absolute top-1 right-1 w-2.5 h-2.5 bg-stone-800 border-2 border-white rounded-full shadow-sm z-20 transition-all duration-700 ease-spring group-hover:scale-150 group-hover:bg-emerald-600 group-hover:translate-y-[-2px] group-hover:translate-x-[-2px]"></div>
-                                            </div>
-                                        </div>
-                                    </div>
+                                <div className="h-64 bg-stone-100 relative border-b border-stone-100 overflow-hidden">
+                                    <img
+                                        src={cards.image3}
+                                        className="w-full h-full object-cover transition-all duration-1000 ease-out group-hover:scale-110"
+                                        alt={t('home.card3.title')}
+                                    />
                                 </div>
                                 <div className="p-8 flex flex-col flex-grow relative z-10 bg-white">
                                     <div className="flex items-center gap-2 mb-4">
@@ -319,7 +280,7 @@ const Home: React.FC = () => {
             </section>
 
             {/* NEW SECTION 1: Navegando Hacia el Horizonte */}
-            <section className="bg-avanti-light border-b border-gray-200 py-24 md:py-32">
+            <section className="bg-avanti-light border-b border-gray-200 py-16 md:py-32">
                 <div className={gridContainer}>
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                         <div className="relative order-2 lg:order-1">
@@ -402,7 +363,7 @@ const Home: React.FC = () => {
             </section>
 
             {/* NEW SECTION 2: La Precisión en Cada Detalle */}
-            <section id="contacto" className="py-24 md:py-32 bg-white relative overflow-hidden">
+            <section id="contacto" className="py-16 md:py-32 bg-white relative overflow-hidden">
                 <div className="absolute inset-0 opacity-[0.02]" style={{ backgroundImage: 'radial-gradient(#44403c 1px, transparent 1px)', backgroundSize: '32px 32px' }}></div>
                 <div className={`${gridContainer} relative z-10`}>
                     <div className="text-center mb-20">
@@ -429,58 +390,122 @@ const Home: React.FC = () => {
                         </div>
                         <div className="order-1 md:order-2 pt-8 md:pt-0">
                             <Reveal delay={0.6}>
-                                <form className="space-y-12">
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                                        <div className="space-y-4">
-                                            <label htmlFor="nombre" className="text-xs uppercase tracking-widest text-gray-500 font-semibold">{t('home.form.name')}</label>
-                                            <input type="text" id="nombre" className="w-full bg-transparent border-b border-gray-300 py-3 text-avanti-900 focus:outline-none focus:border-avanti-900 transition-colors placeholder-gray-300 text-sm font-light" placeholder="..." />
+                                {success ? (
+                                    <div className="bg-green-50 border border-green-200 p-12 rounded-sm text-center animate-page-enter">
+                                        <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 text-green-700">
+                                            <Check className="w-8 h-8" />
                                         </div>
-                                        <div className="space-y-4">
-                                            <label htmlFor="email" className="text-xs uppercase tracking-widest text-gray-500 font-semibold">{t('home.form.email')}</label>
-                                            <input type="email" id="email" className="w-full bg-transparent border-b border-gray-300 py-3 text-avanti-900 focus:outline-none focus:border-avanti-900 transition-colors placeholder-gray-300 text-sm font-light" placeholder="..." />
-                                        </div>
-                                    </div>
-                                    <div className="space-y-4">
-                                        <label className="text-xs uppercase tracking-widest text-gray-500 font-semibold">{t('home.form.interest')}</label>
-                                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-2">
-                                            <label className="cursor-pointer">
-                                                <input type="radio" name="service" className="peer sr-only" />
-                                                <div className="w-full py-3 px-4 text-xs text-center border border-gray-200 text-gray-500 rounded-sm peer-checked:bg-avanti-900 peer-checked:text-white peer-checked:border-avanti-900 transition-all hover:border-gray-400">
-                                                    {t('home.form.interest.wealth')}
-                                                </div>
-                                            </label>
-                                            <label className="cursor-pointer">
-                                                <input type="radio" name="service" className="peer sr-only" />
-                                                <div className="w-full py-3 px-4 text-xs text-center border border-gray-200 text-gray-500 rounded-sm peer-checked:bg-avanti-900 peer-checked:text-white peer-checked:border-avanti-900 transition-all hover:border-gray-400">
-                                                    {t('home.form.interest.invest')}
-                                                </div>
-                                            </label>
-                                            <label className="cursor-pointer">
-                                                <input type="radio" name="service" className="peer sr-only" />
-                                                <div className="w-full py-3 px-4 text-xs text-center border border-gray-200 text-gray-500 rounded-sm peer-checked:bg-avanti-900 peer-checked:text-white peer-checked:border-avanti-900 transition-all hover:border-gray-400">
-                                                    {t('home.form.interest.succession')}
-                                                </div>
-                                            </label>
-                                        </div>
-                                    </div>
-                                    <div className="space-y-4">
-                                        <label htmlFor="mensaje" className="text-xs uppercase tracking-widest text-gray-500 font-semibold">{t('home.form.message')}</label>
-                                        <textarea id="mensaje" rows={3} className="w-full bg-transparent border-b border-gray-300 py-3 text-avanti-900 focus:outline-none focus:border-avanti-900 transition-colors placeholder-gray-300 text-sm resize-none" placeholder="..."></textarea>
-                                    </div>
-                                    <div className="pt-4 flex flex-col md:flex-row items-center justify-between gap-6">
-                                        <label className="flex items-center space-x-3 cursor-pointer group">
-                                            <div className="relative w-4 h-4 border border-gray-300 rounded-sm flex items-center justify-center group-hover:border-gray-500 transition-colors bg-white">
-                                                <input type="checkbox" className="peer appearance-none w-full h-full cursor-pointer absolute inset-0" />
-                                                <Check className="w-3 h-3 text-avanti-900 opacity-0 peer-checked:opacity-100 transition-opacity" />
-                                            </div>
-                                            <span className="text-xs text-gray-400 group-hover:text-gray-600 transition-colors">{t('home.form.privacy')}</span>
-                                        </label>
-                                        <button type="submit" className="group flex items-center space-x-2 bg-avanti-900 text-white px-8 py-4 text-xs font-bold uppercase tracking-widest hover:bg-avanti-800 transition-colors shadow-lg shadow-gray-200 w-full md:w-auto justify-center">
-                                            <span>{t('home.form.submit')}</span>
-                                            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
+                                        <h4 className="text-green-800 font-serif text-2xl mb-4 font-medium">{t('contact.formSuccessTitle')}</h4>
+                                        <p className="text-green-700 mb-8">{t('contact.formSuccessMsg')}</p>
+                                        <button
+                                            onClick={() => setSuccess(false)}
+                                            className="text-sm font-bold uppercase tracking-widest text-green-800 border-b border-green-800 pb-1 hover:opacity-70 transition-opacity"
+                                        >
+                                            {t('contact.formAnother')}
                                         </button>
                                     </div>
-                                </form>
+                                ) : (
+                                    <form onSubmit={handleSubmit} className="space-y-12">
+                                        {error && (
+                                            <div className="bg-red-50 border border-red-200 p-4 rounded-sm mb-6">
+                                                <p className="text-red-700 text-xs font-medium text-center">{error}</p>
+                                            </div>
+                                        )}
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                                            <div className="space-y-4">
+                                                <label htmlFor="name" className="text-xs uppercase tracking-widest text-gray-500 font-semibold">{t('home.form.name')}</label>
+                                                <input
+                                                    type="text"
+                                                    id="name"
+                                                    required
+                                                    value={formData.name}
+                                                    onChange={handleInputChange}
+                                                    className="w-full bg-transparent border-b border-gray-300 py-3 text-avanti-900 focus:outline-none focus:border-avanti-900 transition-colors placeholder-gray-300 text-sm font-light"
+                                                    placeholder="..."
+                                                />
+                                            </div>
+                                            <div className="space-y-4">
+                                                <label htmlFor="email" className="text-xs uppercase tracking-widest text-gray-500 font-semibold">{t('home.form.email')}</label>
+                                                <input
+                                                    type="email"
+                                                    id="email"
+                                                    required
+                                                    value={formData.email}
+                                                    onChange={handleInputChange}
+                                                    className="w-full bg-transparent border-b border-gray-300 py-3 text-avanti-900 focus:outline-none focus:border-avanti-900 transition-colors placeholder-gray-300 text-sm font-light"
+                                                    placeholder="..."
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="space-y-4">
+                                            <label className="text-xs uppercase tracking-widest text-gray-500 font-semibold">{t('home.form.interest')}</label>
+                                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-2">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleInterestChange(ContactReason.TaxesCorporate)}
+                                                    className={`py-3 px-4 text-xs text-center border rounded-sm transition-all ${formData.reason === ContactReason.TaxesCorporate ? 'bg-avanti-900 text-white border-avanti-900' : 'border-gray-200 text-gray-500 hover:border-gray-400'}`}
+                                                >
+                                                    {t('home.form.interest.wealth')}
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleInterestChange(ContactReason.Accounting)}
+                                                    className={`py-3 px-4 text-xs text-center border rounded-sm transition-all ${formData.reason === ContactReason.Accounting ? 'bg-avanti-900 text-white border-avanti-900' : 'border-gray-200 text-gray-500 hover:border-gray-400'}`}
+                                                >
+                                                    {t('home.form.interest.invest')}
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleInterestChange(ContactReason.General)}
+                                                    className={`py-3 px-4 text-xs text-center border rounded-sm transition-all ${formData.reason === ContactReason.General ? 'bg-avanti-900 text-white border-avanti-900' : 'border-gray-200 text-gray-500 hover:border-gray-400'}`}
+                                                >
+                                                    {t('home.form.interest.succession')}
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div className="space-y-4">
+                                            <label htmlFor="message" className="text-xs uppercase tracking-widest text-gray-500 font-semibold">{t('home.form.message')}</label>
+                                            <textarea
+                                                id="message"
+                                                rows={3}
+                                                required
+                                                value={formData.message}
+                                                onChange={handleInputChange}
+                                                className="w-full bg-transparent border-b border-gray-300 py-3 text-avanti-900 focus:outline-none focus:border-avanti-900 transition-colors placeholder-gray-300 text-sm resize-none"
+                                                placeholder="..."
+                                            ></textarea>
+                                        </div>
+                                        <div className="pt-4 flex flex-col md:flex-row items-center justify-between gap-6">
+                                            <label className="flex items-center space-x-3 cursor-pointer group">
+                                                <div className="relative w-4 h-4 border border-gray-300 rounded-sm flex items-center justify-center group-hover:border-gray-500 transition-colors bg-white">
+                                                    <input
+                                                        type="checkbox"
+                                                        id="privacy"
+                                                        checked={formData.privacy}
+                                                        onChange={handleInputChange}
+                                                        className="peer appearance-none w-full h-full cursor-pointer absolute inset-0"
+                                                    />
+                                                    <Check className="w-3 h-3 text-avanti-900 opacity-0 peer-checked:opacity-100 transition-opacity" />
+                                                </div>
+                                                <span className="text-xs text-gray-400 group-hover:text-gray-600 transition-colors">{t('home.form.privacy')}</span>
+                                            </label>
+                                            <button
+                                                type="submit"
+                                                disabled={isSubmitting}
+                                                className="group flex items-center space-x-2 bg-avanti-900 text-white px-8 py-4 text-xs font-bold uppercase tracking-widest hover:bg-avanti-800 transition-all shadow-lg shadow-gray-200 w-full md:w-auto justify-center disabled:opacity-70 disabled:cursor-not-allowed"
+                                            >
+                                                {isSubmitting ? (
+                                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                                ) : (
+                                                    <>
+                                                        <span>{t('home.form.submit')}</span>
+                                                        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
+                                                    </>
+                                                )}
+                                            </button>
+                                        </div>
+                                    </form>
+                                )}
                             </Reveal>
                         </div>
                     </div>
@@ -511,7 +536,7 @@ const Home: React.FC = () => {
                         </Reveal>
 
                         <Reveal delay={0.4}>
-                            <h2 className="font-serif text-4xl md:text-7xl text-white mb-8 leading-[1.1] drop-shadow-xl tracking-tight">
+                            <h2 className="font-serif text-3xl md:text-7xl text-white mb-8 leading-[1.1] drop-shadow-xl tracking-tight">
                                 {finalCta?.title || t('home.ctaTitle')} <br />
                                 <span className="text-gray-400 font-normal">{finalCta?.titleItalic || t('home.ctaTitleItalic')}</span>
                             </h2>

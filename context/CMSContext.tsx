@@ -83,6 +83,13 @@ export interface PageContent {
       office: string;
     }
   };
+  payment: {
+    hero: {
+      title: string;
+      subtitle: string;
+      image: string;
+    }
+  };
 }
 
 interface CMSContextType {
@@ -179,6 +186,13 @@ const defaultPageContentEs: PageContent = {
       solidBackground: "rgba(255,255,255,0.85)"
     }
   },
+  payment: {
+    hero: {
+      title: "Pagos y Consultas",
+      subtitle: "Gestione sus pagos de forma segura y eficiente.",
+      image: "https://images.unsplash.com/photo-1556742049-0cfed4f7a07d?q=80&w=2070&auto=format&fit=crop"
+    }
+  },
   about: {
     hero: {
       title: "Sobre AVANTI",
@@ -263,6 +277,13 @@ const defaultPageContentEn: PageContent = {
       logoFallback: "/assets/logo/logo-white.png",
       transparentBackground: "rgba(0,0,0,0)",
       solidBackground: "rgba(255,255,255,0.85)"
+    }
+  },
+  payment: {
+    hero: {
+      title: "Payments & Inquiries",
+      subtitle: "Manage your payments securely and efficiently.",
+      image: "https://images.unsplash.com/photo-1556742049-0cfed4f7a07d?q=80&w=2070&auto=format&fit=crop"
     }
   },
   about: {
@@ -422,15 +443,30 @@ export const CMSProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       let esContent = { ...defaultPageContentEs };
       let enContent = { ...defaultPageContentEn };
 
+      // Create a map of Spanish pages for fallback
+      const esPagesMap = new Map();
+      data?.forEach((p: any) => {
+        if (p.language === 'es') esPagesMap.set(p.slug, p);
+      });
+
       data?.forEach((page: any) => {
+        const esPage = esPagesMap.get(page.slug);
+
         if (page.slug === 'home') {
-          const defaultBranding = page.language === 'es' ? defaultPageContentEs.home.branding : defaultPageContentEn.home.branding;
+          // fallback logic for branding
+          let defaultBranding = page.language === 'es' ? defaultPageContentEs.home.branding : defaultPageContentEn.home.branding;
+
+          // If EN and missing branding, try to use ES branding
+          if (page.language === 'en' && !page.content?.branding && esPage?.content?.branding) {
+            defaultBranding = esPage.content.branding;
+          }
+
           const homeData = {
             hero: {
               title: page.title,
               subtitle: page.subtitle || '',
               description: page.description || '',
-              image: page.hero_image_url || '',
+              image: page.hero_image_url || esPage?.hero_image_url || '',
               images: page.content?.hero?.images || (page.language === 'es' ? defaultPageContentEs.home.hero.images : defaultPageContentEn.home.hero.images)
             },
             collage: page.content?.collage || defaultPageContentEs.home.collage,
@@ -459,7 +495,8 @@ export const CMSProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
             hero: {
               title: page.title,
               subtitle: page.subtitle || '',
-              image: page.hero_image_url || ''
+              // Fallback to ES image if EN is missing
+              image: page.hero_image_url || esPage?.hero_image_url || ''
             },
             intro: content.intro || defaultPageContentEs.about.intro,
             cards: content.cards || defaultPageContentEs.about.cards
@@ -474,7 +511,8 @@ export const CMSProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
             hero: {
               title: page.title,
               subtitle: page.subtitle || '',
-              image: page.hero_image_url || ''
+              // Fallback to ES image if EN is missing
+              image: page.hero_image_url || esPage?.hero_image_url || ''
             }
           };
           if (page.language === 'es') {
@@ -487,7 +525,8 @@ export const CMSProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
             hero: {
               title: page.title,
               subtitle: page.subtitle || '',
-              image: page.hero_image_url || ''
+              // Fallback to ES image if EN is missing
+              image: page.hero_image_url || esPage?.hero_image_url || ''
             },
             info: page.content?.info || (page.language === 'es' ? defaultPageContentEs.contact.info : defaultPageContentEn.contact.info)
           };
@@ -495,6 +534,19 @@ export const CMSProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
             esContent.contact = contactData;
           } else {
             enContent.contact = contactData;
+          }
+        } else if (page.slug === 'payment') {
+          const paymentData = {
+            hero: {
+              title: page.title,
+              subtitle: page.subtitle || '',
+              image: page.hero_image_url || esPage?.hero_image_url || ''
+            }
+          };
+          if (page.language === 'es') {
+            esContent.payment = paymentData;
+          } else {
+            enContent.payment = paymentData;
           }
         }
 

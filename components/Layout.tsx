@@ -92,7 +92,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       // style={{ backgroundColor: headerBackgroundColor }} // Removed to rely on classes for smooth transition
       >
         <div className={headerContainer}>
-          <div className={`flex justify-between items-center transition-all duration-700 ease-in-out ${isScrolled ? 'h-20 md:h-24' : 'h-28 md:h-36'}`}>
+          <div className={`flex justify-between items-center transition-all duration-700 ease-in-out ${isScrolled ? 'h-16 md:h-24' : 'h-20 md:h-36'}`}>
             {/* Logo */}
             <Link to="/" className="flex items-center gap-3 md:gap-4 group" onClick={closeMenu}>
               {/* Logo Image or Fallback Icon */}
@@ -100,7 +100,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 <img
                   src={currentLogoSrc}
                   alt="Avanti Advisory Group logo"
-                  className={`h-20 md:h-28 w-auto object-contain bg-transparent transition-all duration-500 ${isScrolled ? 'h-16 md:h-20' : 'h-24 md:h-32'}`}
+                  className={`h-16 md:h-36 w-auto object-contain bg-transparent transition-all duration-500 ${isScrolled ? 'h-14 md:h-28' : 'h-18 md:h-40'}`}
                   onError={(event) => {
                     const target = event.currentTarget as HTMLImageElement;
                     // Prevent infinite loop if fallback also fails
@@ -263,16 +263,16 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       </main>
 
       {/* Footer */}
-      <footer className="bg-[#F2F2F2] relative pt-20 pb-8 overflow-hidden mt-auto border-t border-gray-200">
+      <footer className="bg-[#F2F2F2] relative pt-12 md:pt-20 pb-8 overflow-hidden mt-auto border-t border-gray-200">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full text-center pointer-events-none select-none z-0">
-          <h1 className="text-[15vw] lg:text-[18vw] font-serif font-bold text-gray-300/40 leading-none tracking-tighter">
+          <h1 className="hidden md:block text-[15vw] lg:text-[18vw] font-serif font-bold text-gray-300/40 leading-none tracking-tighter">
             AVANTI
           </h1>
         </div>
         <div className={`${gridContainer} relative z-10 flex flex-col min-h-[50vh] justify-between`}>
-          <div className="grid grid-cols-12 gap-8 mb-24">
-            <div className="col-span-6 md:col-span-3 lg:col-span-2">
-              <h4 className="text-xs font-bold uppercase tracking-widest text-avanti-900 mb-6 flex items-center gap-2">
+          <div className="grid grid-cols-12 gap-8 mb-8 md:mb-24">
+            <div className="col-span-12 md:col-span-3 lg:col-span-2 text-center md:text-left">
+              <h4 className="text-xs font-bold uppercase tracking-widest text-avanti-900 mb-6 flex items-center justify-center md:justify-start gap-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-avanti-gold"></span> {t('footer.menu')}
               </h4>
               <ul className="space-y-3">
@@ -282,17 +282,17 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 <li><Link to="/contact" className="text-sm text-gray-500 hover:text-avanti-900 transition-colors">{t('nav.contact')}</Link></li>
               </ul>
             </div>
-            <div className="col-span-6 md:col-span-3 lg:col-span-2">
-              <h4 className="text-xs font-bold uppercase tracking-widest text-avanti-900 mb-6 flex items-center gap-2">
+            <div className="col-span-12 md:col-span-3 lg:col-span-2 text-center md:text-left">
+              <h4 className="text-xs font-bold uppercase tracking-widest text-avanti-900 mb-6 flex items-center justify-center md:justify-start gap-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-avanti-gold"></span> {t('footer.social')}
               </h4>
               <ul className="space-y-3">
-                <li><a href="#" className="text-sm text-gray-500 hover:text-avanti-900 transition-colors flex items-center gap-1">LinkedIn <ArrowUpRight className="w-3 h-3" /></a></li>
-                <li><a href="#" className="text-sm text-gray-500 hover:text-avanti-900 transition-colors flex items-center gap-1">Twitter <ArrowUpRight className="w-3 h-3" /></a></li>
-                <li><a href="#" className="text-sm text-gray-500 hover:text-avanti-900 transition-colors flex items-center gap-1">Facebook <ArrowUpRight className="w-3 h-3" /></a></li>
+                <li><a href="#" className="text-sm text-gray-500 hover:text-avanti-900 transition-colors flex items-center justify-center md:justify-start gap-1">LinkedIn <ArrowUpRight className="w-3 h-3" /></a></li>
+                <li><a href="#" className="text-sm text-gray-500 hover:text-avanti-900 transition-colors flex items-center justify-center md:justify-start gap-1">Twitter <ArrowUpRight className="w-3 h-3" /></a></li>
+                <li><a href="#" className="text-sm text-gray-500 hover:text-avanti-900 transition-colors flex items-center justify-center md:justify-start gap-1">Facebook <ArrowUpRight className="w-3 h-3" /></a></li>
               </ul>
             </div>
-            <div className="col-span-12 md:col-span-6 lg:col-span-4 lg:col-start-9 text-right md:text-left lg:text-right">
+            <div className="col-span-12 md:col-span-6 lg:col-span-4 lg:col-start-9 text-center md:text-left lg:text-right">
               <p className="text-lg font-serif text-avanti-900 leading-relaxed mb-6">
                 {t('footer.tagline')}
               </p>
@@ -301,8 +301,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               </a>
             </div>
           </div>
-          <div className="flex flex-col md:flex-row justify-between items-end border-t border-gray-300/50 pt-8 gap-6">
-            <div className="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-8">
+          <div className="flex flex-col md:flex-row justify-between items-center items-end md:items-end border-t border-gray-300/50 pt-8 gap-8 md:gap-6">
+            <div className="flex flex-col md:flex-row items-center md:items-center gap-4 md:gap-8 order-2 md:order-1">
               <Link to="/" className="hover:opacity-80 transition-opacity">
                 <img
                   src={logoDark}
@@ -313,7 +313,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               </Link>
               <span className="text-[10px] text-gray-400">© {new Date().getFullYear()} {t('footer.rights')}</span>
             </div>
-            <div className="flex flex-col-reverse md:flex-row items-end md:items-center gap-6 w-full md:w-auto">
+            <div className="flex flex-col-reverse md:flex-row items-center md:items-center gap-6 w-full md:w-auto order-1 md:order-2">
               <div className="flex gap-6 text-[10px] font-bold uppercase tracking-widest text-gray-400">
                 <Link to="#" className="hover:text-avanti-900 transition-colors">Privacy Policy</Link>
                 <Link to="#" className="hover:text-avanti-900 transition-colors">Terms of Service</Link>

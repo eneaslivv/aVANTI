@@ -45,7 +45,7 @@ const ServicePage: React.FC<ServicePageProps> = ({ previewData }) => {
     <div className="bg-white min-h-screen pb-20">
 
       {/* Refined & Subtle Header */}
-      <div className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden min-h-[50vh] md:min-h-[60vh] flex items-end bg-avanti-900">
+      <div className="relative pt-20 pb-12 md:pt-48 md:pb-32 overflow-hidden min-h-[35vh] md:min-h-[60vh] flex items-end bg-avanti-900">
         {/* Background Image Layer */}
         <div className="absolute inset-0 z-0">
           <img
@@ -60,12 +60,24 @@ const ServicePage: React.FC<ServicePageProps> = ({ previewData }) => {
         <div className={gridContainer + " relative z-10 w-full"}>
           <div className="max-w-3xl lg:max-w-4xl">
             <Reveal delay={0}>
-              <div className="flex items-center gap-3 mb-6">
-                <span className="w-10 h-[1px] bg-avanti-gold"></span>
-                <span className="text-[10px] font-bold tracking-[0.3em] text-avanti-gold uppercase">{t('service.badge')}</span>
+              <div className="flex flex-wrap items-center gap-4 mb-8">
+                <div className="flex items-center gap-3 bg-black/40 backdrop-blur-md px-4 py-2 rounded-sm border border-white/10 shadow-2xl">
+                  <span className="w-8 h-[1px] bg-avanti-gold animate-pulse"></span>
+                  <span className="text-[10px] font-bold tracking-[0.3em] text-avanti-gold uppercase flex items-center">
+                    {t('service.badge')}
+                  </span>
+                </div>
+                <div className="h-4 w-px bg-white/20 hidden sm:block"></div>
+                <a
+                  href="mailto:info@avantiag.com"
+                  className="text-[10px] font-bold tracking-[0.2em] text-white/70 uppercase hover:text-avanti-gold transition-all duration-300 flex items-center gap-2 group"
+                >
+                  <span className="w-1.5 h-1.5 bg-avanti-gold rounded-full group-hover:scale-125 transition-transform"></span>
+                  info@avantiag.com
+                </a>
               </div>
             </Reveal>
-            <h1 className="text-4xl md:text-7xl font-serif font-medium text-white leading-tight tracking-tight">
+            <h1 className="text-3xl md:text-7xl font-serif font-medium text-white leading-tight tracking-tight">
               <WordReveal text={service.title} className="text-white" />
             </h1>
           </div>
@@ -73,11 +85,11 @@ const ServicePage: React.FC<ServicePageProps> = ({ previewData }) => {
       </div>
 
       <div className={gridContainer + " relative z-30 mt-20"}>
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 lg:gap-24">
 
-          <div id="details" className="col-span-12 lg:col-span-7 space-y-16 scroll-mt-32">
+          <div id="details" className="col-span-12 lg:col-span-7 space-y-8 md:space-y-16 scroll-mt-32">
             <Reveal delay={0.3}>
-              <div className="prose prose-2xl max-w-none text-slate-600 font-light leading-relaxed">
+              <div className="prose prose-base md:prose-xl lg:prose-2xl max-w-none text-slate-600 font-light leading-relaxed">
                 {service.description}
               </div>
             </Reveal>
@@ -106,7 +118,7 @@ const ServicePage: React.FC<ServicePageProps> = ({ previewData }) => {
             {service.subSections && service.subSections.map((sub, idx) => (
               <Reveal key={idx} delay={0.6 + (idx * 0.2)}>
                 <div className="border-t border-gray-100 pt-12 group">
-                  <h3 className="text-3xl font-serif font-medium text-avanti-900 mb-6 group-hover:text-avanti-gold transition-colors">{sub.title}</h3>
+                  <h3 className="text-xl md:text-3xl font-serif font-medium text-avanti-900 mb-4 md:mb-6 group-hover:text-avanti-gold transition-colors">{sub.title}</h3>
                   <p className="text-lg text-slate-500 leading-relaxed font-light">{sub.content}</p>
                 </div>
               </Reveal>
@@ -116,7 +128,7 @@ const ServicePage: React.FC<ServicePageProps> = ({ previewData }) => {
           <div className="col-span-12 lg:col-span-5">
             <Reveal delay={0.8}>
               <div className="lg:-mt-32 relative z-40">
-                <ContactForm defaultReason={contactReason} />
+                <ContactForm defaultReason={contactReason} sourcePage={service.title} />
               </div>
             </Reveal>
           </div>
@@ -151,7 +163,7 @@ const ServicePage: React.FC<ServicePageProps> = ({ previewData }) => {
                     <Link
                       key={related.id}
                       to={`/services/${related.id}`}
-                      className="group block min-w-[320px] md:min-w-[420px] snap-start"
+                      className="group block min-w-[280px] md:min-w-[420px] snap-start"
                     >
                       <div className="relative h-[500px] overflow-hidden rounded-sm group">
                         <img src={related.image || "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&q=80"} className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 grayscale group-hover:grayscale-0" alt={related.title} />

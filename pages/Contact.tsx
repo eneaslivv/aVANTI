@@ -13,7 +13,7 @@ const Contact: React.FC = () => {
         <div className="bg-white min-h-screen pb-20">
 
             {/* Editorial Contact Header */}
-            <div className="relative pt-48 pb-32 md:pt-64 md:pb-48 overflow-hidden min-h-[70vh] flex items-end">
+            <div className="relative pt-24 pb-12 md:pt-64 md:pb-48 overflow-hidden min-h-[40vh] md:min-h-[70vh] flex items-end">
                 {/* Background Image Layer */}
                 <div className="absolute inset-0 z-0">
                     <img
@@ -28,12 +28,24 @@ const Contact: React.FC = () => {
                 <div className={gridContainer + " relative z-10 w-full"}>
                     <div className="max-w-4xl">
                         <Reveal delay={0}>
-                            <div className="flex items-center gap-3 mb-8">
-                                <span className="w-12 h-[1px] bg-avanti-gold"></span>
-                                <span className="text-[11px] font-bold tracking-[0.4em] text-avanti-gold uppercase">{t('contact.badge')}</span>
+                            <div className="flex flex-wrap items-center gap-4 mb-4 md:mb-8">
+                                <div className="flex items-center gap-3 bg-black/40 backdrop-blur-md px-4 py-2 rounded-sm border border-white/10 shadow-2xl">
+                                    <span className="w-8 h-[1px] bg-avanti-gold animate-pulse"></span>
+                                    <span className="text-[10px] font-bold tracking-[0.3em] text-avanti-gold uppercase">
+                                        {t('contact.badge')}
+                                    </span>
+                                </div>
+                                <div className="h-4 w-px bg-white/20 hidden sm:block"></div>
+                                <a
+                                    href="mailto:info@avantiag.com"
+                                    className="text-[10px] font-bold tracking-[0.2em] text-white/70 uppercase hover:text-avanti-gold transition-all duration-300 flex items-center gap-2 group"
+                                >
+                                    <span className="w-1.5 h-1.5 bg-avanti-gold rounded-full group-hover:scale-125 transition-transform"></span>
+                                    info@avantiag.com
+                                </a>
                             </div>
                         </Reveal>
-                        <h1 className="text-5xl md:text-8xl font-serif font-medium text-white mb-8 leading-[1.05] tracking-tight drop-shadow-2xl">
+                        <h1 className="text-3xl md:text-8xl font-serif font-medium text-white mb-8 leading-[1.05] tracking-tight drop-shadow-2xl">
                             <WordReveal text={hero.title} className="text-white" />
                         </h1>
                         <Reveal delay={0.4}>
@@ -48,11 +60,11 @@ const Contact: React.FC = () => {
                 <div className="absolute bottom-0 left-0 w-full h-32 backdrop-blur-[2px] bg-gradient-to-t from-white to-transparent z-20"></div>
             </div>
 
-            <div className={`${gridContainer} mt-32 relative z-30`}>
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24">
+            <div className={`${gridContainer} mt-20 md:mt-32 relative z-30`}>
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-24">
 
                     {/* LS: Contact Info */}
-                    <div className="col-span-12 lg:col-span-5 space-y-16">
+                    <div className="col-span-12 lg:col-span-5 space-y-8 md:space-y-16">
                         <Reveal delay={0.2}>
                             <div className="space-y-6">
                                 <h2 className="text-4xl md:text-5xl font-serif text-avanti-900 tracking-tight leading-tight">{t('contact.infoTitle')}</h2>
@@ -102,7 +114,7 @@ const Contact: React.FC = () => {
                     <div className="col-span-12 lg:col-span-7">
                         <Reveal delay={0.6}>
                             <div className="lg:-mt-48 relative z-40">
-                                <ContactForm />
+                                <ContactForm sourcePage="Contacto" />
                             </div>
                         </Reveal>
                     </div>
